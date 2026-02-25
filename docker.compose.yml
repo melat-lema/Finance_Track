@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: postgres:15-alpine
+    container_name: finance_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres123}
+      POSTGRES_DB: finance_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - finance_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: finance_backend
+    environment:
+      DATABASE_URL: postgresql://postgres:${DB_PASSWORD:-postgres123}@db:5432/finance_db
+      JWT_SECRET: ${JWT_SECRET:kJ8#mN2$pL9@vX4&wQ7!zR5*tY1^bC3}
+      PORT: 5000
+      NODE_ENV: production
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - finance_network
+    command: >
+      sh -c "npx prisma migrate deploy && npm start"
+
+  # Frontend (Nginx)
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: finance_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - finance_network
+
+networks:
+  finance_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
