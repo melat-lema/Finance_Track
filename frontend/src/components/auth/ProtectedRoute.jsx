@@ -3,7 +3,7 @@ import { isAuthenticated, getCurrentUser } from '../../api/financeApi';
 import Spinner from '../common/Spinner';
 import { useState, useEffect } from 'react';
 
-const ProtectedRoute = ({ children, requireEmail = false }) => {
+const protectedRoute = ({ children, requireEmail = false }) => {
   const location = useLocation();
   const [checking, setChecking] = useState(true);
   const [auth, setAuth] = useState({
@@ -52,4 +52,4 @@ const ProtectedRoute = ({ children, requireEmail = false }) => {
   return children;
 };
 
-export default ProtectedRoute;
+export default protectedRoute;
