@@ -10,7 +10,7 @@ import AddTransaction from './pages/AddTransaction'
 import Analytics from './pages/Analytics'
 import Profile from './pages/Profile'
 import EditTransaction from './pages/EditTransaction'
-import ProtectedRoute from './components/auth/protectedRoute'
+import ProtectedRoute from './components/auth/ProtectedRoute'
 import { isAuthenticated } from './api/financeApi'
 import PublicRoute from './components/auth/PublicRoute';
 import { useAuthCheck } from './hooks/useAuthCheck'
